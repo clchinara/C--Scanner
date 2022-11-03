@@ -78,12 +78,44 @@ void printSymTab()
     for (i=0; i<TABLE_SIZE; i++)
     {
         symtab* symptr;
-	symptr = hash_table[i];
-	while (symptr != NULL)
-	{
-            printf("====>  index = %d \n", i);
-	    printSym(symptr);
-	    symptr=symptr->front;
-	}
+		symptr = hash_table[i];
+		while (symptr != NULL)
+		{
+			printf("====>  index = %d \n", i);
+			printSym(symptr);
+			symptr=symptr->front;
+		}
     }
+}
+
+void printFormattedSymTab()
+{
+	printf("\nFrequency of identifiers:\n");
+	symtab* sortedtab[linenumber];
+	int idx = 0;
+	for (int i = 0; i < TABLE_SIZE; i++) {
+		symtab* symptr;
+		symptr = hash_table[i];
+		// Collapse nested tab
+		while (symptr != NULL)
+		{
+			sortedtab[idx++] = symptr;
+			symptr=symptr->front;
+		}
+	}
+	// Sort
+	for (int i = 0; i < idx; i++) {
+		for (int j = 0; j < idx - 1; j++) {
+			if (strcmp(sortedtab[j]->lexeme, sortedtab[j + 1]->lexeme) > 0) {
+				symtab* tmp = sortedtab[j];
+				sortedtab[j] = sortedtab[j+1];
+				sortedtab[j + 1] = tmp;
+			}
+		}
+	}
+	// Print
+	for (int i = 0; i < idx; i++) {
+		printf("%s\t%d\n", sortedtab[i]->lexeme, sortedtab[i]->counter);
+	}
+
 }
